@@ -19,6 +19,9 @@ class MainActivity: FlutterActivity() {
     private var sharedText: String? = null
     private val NEW_CHANNEL = "app.channel.process.data"
 
+    private  var sharedUrl: String? = null
+    private val TEST_CHANNEL = "app.channel.process.urls"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = intent
@@ -30,19 +33,29 @@ class MainActivity: FlutterActivity() {
                 handleSendText(intent)
             }
         }
+
+        if (Intent.ACTION_SEND == action && type != null) {
+            if ("text/*" == type) {
+                handleSendUrl(intent)
+            }
+        }
     }
 
-    private fun sendTextToFlutter(text: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, text)
-            type = "text/plain"
-        }
-        startActivity(intent)
-    }
+//    private fun sendTextToFlutter(text: String) {
+//        val intent = Intent(this, MainActivity::class.java).apply {
+//            action = Intent.ACTION_SEND
+//            putExtra(Intent.EXTRA_TEXT, text)
+//            type = "text/plain"
+//        }
+//        startActivity(intent)
+//    }
 
     private fun handleSendText(intent: Intent) {
         sharedText = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT)
+    }
+
+    private fun handleSendUrl(intent: Intent){
+        sharedUrl = intent.getStringExtra(Intent.EXTRA_TEXT)
     }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
@@ -72,6 +85,16 @@ class MainActivity: FlutterActivity() {
                         result.notImplemented();
                     }
                 }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TEST_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                if (call.method.contentEquals("getSharedUrl")) {
+                    result.success(sharedUrl);
+                    sharedUrl = null;
+                } else {
+                    result.notImplemented();
+                }
+            }
     }
 
     private fun getBatteryLevel(): Int {

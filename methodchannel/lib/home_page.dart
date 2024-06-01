@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:methodchannel/second_page.dart';
+import 'package:methodchannel/third_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -52,6 +53,17 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               child: const Text("Navigate To Second Page"),
+            ),
+            const SizedBox(height: 20),
+            FilledButton.tonal(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ThirdPage(),
+                  ),
+                );
+              },
+              child: const Text("Navigate To Third Page"),
             )
           ],
         ),
